@@ -1,0 +1,5 @@
+Site Title: The Blog
+Username: adminfarazhashmi
+Password: 8mWhbX6W36wHJSLm7f
+Email: developerfaraz@outlook.com
+Table Prefix: blog_
