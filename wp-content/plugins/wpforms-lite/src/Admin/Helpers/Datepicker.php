@@ -71,7 +71,7 @@ class Datepicker {
 			return self::get_timespan_dates( self::TIMESPAN_DAYS );
 		}
 
-		$timezone   = wpforms_get_timezone(); // Retrieve the timezone string for the site.
+		$timezone   = wp_timezone(); // Retrieve the timezone string for the site.
 		$start_date = date_create_immutable( $start_date, $timezone );
 		$end_date   = date_create_immutable( $end_date, $timezone );
 
@@ -171,7 +171,7 @@ class Datepicker {
 			return false;
 		}
 
-		$timezone   = wpforms_get_timezone(); // Retrieve the timezone object for the site.
+		$timezone   = wp_timezone(); // Retrieve the timezone object for the site.
 		$start_date = date_create_immutable( $start_date, $timezone );
 		$end_date   = date_create_immutable( $end_date, $timezone );
 
@@ -278,6 +278,65 @@ class Datepicker {
 	}
 
 	/**
+	 * Get the site's date format from WordPress settings and convert it to a format compatible with Moment.js.
+	 *
+	 * @since 1.8.5.4
+	 *
+	 * @return string
+	 */
+	public static function get_wp_date_format_for_momentjs() {
+
+		// Get the date format from WordPress settings.
+		$date_format = get_option( 'date_format', 'F j, Y' );
+
+		// Define a mapping of PHP date format characters to Moment.js format characters.
+		$format_mapping = [
+			'd' => 'DD',
+			'D' => 'ddd',
+			'j' => 'D',
+			'l' => 'dddd',
+			'S' => '', // PHP's S (English ordinal suffix) is not directly supported in Moment.js.
+			'w' => 'd',
+			'z' => '', // PHP's z (Day of the year) is not directly supported in Moment.js.
+			'W' => '', // PHP's W (ISO-8601 week number of year) is not directly supported in Moment.js.
+			'F' => 'MMMM',
+			'm' => 'MM',
+			'M' => 'MMM',
+			'n' => 'M',
+			't' => '', // PHP's t (Number of days in the given month) is not directly supported in Moment.js.
+			'L' => '', // PHP's L (Whether it's a leap year) is not directly supported in Moment.js.
+			'o' => 'YYYY',
+			'Y' => 'YYYY',
+			'y' => 'YY',
+			'a' => 'a',
+			'A' => 'A',
+			'B' => '', // PHP's B (Swatch Internet time) is not directly supported in Moment.js.
+			'g' => 'h',
+			'G' => 'H',
+			'h' => 'hh',
+			'H' => 'HH',
+			'i' => 'mm',
+			's' => 'ss',
+			'u' => '', // PHP's u (Microseconds) is not directly supported in Moment.js.
+			'e' => '', // PHP's e (Timezone identifier) is not directly supported in Moment.js.
+			'I' => '', // PHP's I (Whether or not the date is in daylight saving time) is not directly supported in Moment.js.
+			'O' => '', // PHP's O (Difference to Greenwich time (GMT) without colon) is not directly supported in Moment.js.
+			'P' => '', // PHP's P (Difference to Greenwich time (GMT) with colon) is not directly supported in Moment.js.
+			'T' => '', // PHP's T (Timezone abbreviation) is not directly supported in Moment.js.
+			'Z' => '', // PHP's Z (Timezone offset in seconds) is not directly supported in Moment.js.
+			'c' => 'YYYY-MM-DD', // PHP's c (ISO 8601 date) is not directly supported in Moment.js.
+			'r' => 'ddd, DD MMM YYYY', // PHP's r (RFC 2822 formatted date) is not directly supported in Moment.js.
+			'U' => '', // PHP's U (Seconds since the Unix Epoch) is not directly supported in Moment.js.
+		];
+
+		// Convert PHP format to JavaScript format.
+		$momentjs_format = strtr( $date_format, $format_mapping );
+
+		// Use 'MMM D, YYYY' as a fallback if the conversion is not available.
+		return empty( $momentjs_format ) ? 'MMM D, YYYY' : $momentjs_format;
+	}
+
+	/**
 	 * The number of days is converted to the start and end date range.
 	 *
 	 * @since 1.8.2
@@ -295,7 +354,7 @@ class Datepicker {
 			return [ '', '', $timespan_key, $timespan_label ];
 		}
 
-		$end_date   = date_create_immutable( 'now', wpforms_get_timezone() );
+		$end_date   = date_create_immutable( 'now', wp_timezone() );
 		$start_date = $end_date;
 
 		if ( (int) $days > 0 ) {

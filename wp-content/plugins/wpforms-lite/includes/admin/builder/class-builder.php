@@ -4,6 +4,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use WPForms\Admin\Education\Helpers;
+
 /**
  * Form builder that contains magic.
  *
@@ -369,18 +371,19 @@ class WPForms_Builder {
 			'4.2.6'
 		);
 
+		// jQuery.Confirm Reloaded.
 		wp_enqueue_style(
 			'jquery-confirm',
 			WPFORMS_PLUGIN_URL . 'assets/lib/jquery.confirm/jquery-confirm.min.css',
 			null,
-			'3.3.4'
+			'1.0.0'
 		);
 
 		wp_enqueue_style(
 			'minicolors',
 			WPFORMS_PLUGIN_URL . 'assets/lib/jquery.minicolors/jquery.minicolors.min.css',
 			null,
-			'2.2.6'
+			'2.3.6'
 		);
 
 		// Remove TinyMCE editor styles from third-party themes and plugins.
@@ -401,11 +404,12 @@ class WPForms_Builder {
 			'4.2.6'
 		);
 
+		// jQuery.Confirm Reloaded.
 		wp_enqueue_script(
 			'jquery-confirm',
 			WPFORMS_PLUGIN_URL . 'assets/lib/jquery.confirm/jquery-confirm.min.js',
 			[ 'jquery' ],
-			'3.3.4'
+			'1.0.0'
 		);
 
 		wp_enqueue_script(
@@ -419,7 +423,7 @@ class WPForms_Builder {
 			'minicolors',
 			WPFORMS_PLUGIN_URL . 'assets/lib/jquery.minicolors/jquery.minicolors.min.js',
 			[ 'jquery' ],
-			'2.2.6'
+			'2.3.6'
 		);
 
 		wp_enqueue_script(
@@ -447,7 +451,7 @@ class WPForms_Builder {
 			'dom-purify',
 			WPFORMS_PLUGIN_URL . 'assets/lib/purify.min.js',
 			[],
-			'3.0.5'
+			'3.0.8'
 		);
 
 		if ( wp_is_mobile() ) {
@@ -456,14 +460,14 @@ class WPForms_Builder {
 
 		wp_enqueue_script(
 			'wpforms-utils',
-			WPFORMS_PLUGIN_URL . "assets/js/admin-utils{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/share/admin-utils{$min}.js",
 			[ 'jquery', 'dom-purify' ],
 			WPFORMS_VERSION
 		);
 
 		wp_enqueue_script(
 			'wpforms-generic-utils',
-			WPFORMS_PLUGIN_URL . "assets/js/utils{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/share/utils{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION
 		);
@@ -477,7 +481,7 @@ class WPForms_Builder {
 
 		wp_enqueue_script(
 			'wpforms-admin-builder-dropdown-list',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/builder/dropdown-list{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/dropdown-list{$min}.js",
 			[ 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -485,7 +489,7 @@ class WPForms_Builder {
 
 		wp_enqueue_script(
 			'wpforms-builder',
-			WPFORMS_PLUGIN_URL . "assets/js/admin-builder{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/admin-builder{$min}.js",
 			[
 				'wpforms-utils',
 				'wpforms-admin-builder-templates',
@@ -501,7 +505,7 @@ class WPForms_Builder {
 
 		wp_enqueue_script(
 			'wpforms-admin-builder-templates',
-			WPFORMS_PLUGIN_URL . "assets/js/components/admin/builder/templates{$min}.js",
+			WPFORMS_PLUGIN_URL . "assets/js/admin/builder/templates{$min}.js",
 			[ 'wp-util' ],
 			WPFORMS_VERSION,
 			true
@@ -543,6 +547,17 @@ class WPForms_Builder {
 		 * @param array $smart_tags Array of smart tags.
 		 */
 		$smart_tags = apply_filters( 'wpforms_builder_enqueues_smart_tags', wpforms()->get( 'smart_tags' )->get_smart_tags() );
+
+		$image_extensions = wpforms_chain( get_allowed_mime_types() )
+			->map(
+				static function ( $mime ) {
+
+					return strpos( $mime, 'image/' ) === 0 ? $mime : '';
+				}
+			)
+			->array_filter()
+			->array_values()
+			->value();
 
 		$strings = [
 			'and'                                     => esc_html__( 'And', 'wpforms-lite' ),
@@ -620,6 +635,7 @@ class WPForms_Builder {
 			'template_modal_msg'                      => ! empty( $this->template['modal']['message'] ) ? $this->template['modal']['message'] : '',
 			'template_modal_display'                  => ! empty( $this->template['modal_display'] ) ? $this->template['modal_display'] : '',
 			'template_select'                         => esc_html__( 'Use Template', 'wpforms-lite' ),
+			'template_selected_badge'                 => Helpers::get_badge( esc_html__( 'Selected', 'wpforms-lite' ), 'sm', 'corner', 'steel', 'rounded-bl' ),
 			'template_confirm'                        => esc_html__( 'Changing templates on an existing form will DELETE existing form fields. Are you sure you want apply the new template?', 'wpforms-lite' ),
 			'use_simple_contact_form'                 => esc_html__( 'Use Simple Contact Form Template', 'wpforms-lite' ),
 			'embed'                                   => esc_html__( 'Embed', 'wpforms-lite' ),
@@ -665,9 +681,11 @@ class WPForms_Builder {
 			'upload_image_title'                      => esc_html__( 'Upload or Choose Your Image', 'wpforms-lite' ),
 			'upload_image_button'                     => esc_html__( 'Use Image', 'wpforms-lite' ),
 			'upload_image_remove'                     => esc_html__( 'Remove Image', 'wpforms-lite' ),
+			'upload_image_extensions'                 => $image_extensions,
+			'upload_image_extensions_error'           => esc_html__( 'You tried uploading a file type that is not allowed. Please try again.', 'wpforms-lite' ),
 			'provider_add_new_acc_btn'                => esc_html__( 'Add', 'wpforms-lite' ),
 			'pro'                                     => wpforms()->is_pro(),
-			'is_gutenberg'                            => version_compare( get_bloginfo( 'version' ), '5.0', '>=' ) && ! is_plugin_active( 'classic-editor/classic-editor.php' ),
+			'is_gutenberg'                            => ! is_plugin_active( 'classic-editor/classic-editor.php' ),
 			'cl_fields_supported'                     => wpforms_get_conditional_logic_form_fields_supported(),
 			'redirect_url_field_error'                => esc_html__( 'You should enter a valid absolute address to the Confirmation Redirect URL field.', 'wpforms-lite' ),
 			'add_custom_value_label'                  => esc_html__( 'Add Custom Value', 'wpforms-lite' ),
@@ -679,6 +697,7 @@ class WPForms_Builder {
 			'error_contact_support'                   => esc_html__( 'Please contact the plugin support team if this behavior persists.', 'wpforms-lite' ),
 			'ms_win_css_url'                          => WPFORMS_PLUGIN_URL . 'assets/css/builder/builder-ms-win.css',
 			'error_select_template'                   => esc_html__( 'Please close the form builder and try again. If the error persists, contact our support team.', 'wpforms-lite' ),
+			'error_load_templates'                    => esc_html__( 'Couldn\'t load the Setup panel.', 'wpforms-lite' ),
 			'blank_form'                              => esc_html__( 'Blank Form', 'wpforms-lite' ),
 			'something_went_wrong'                    => esc_html__( 'Something went wrong', 'wpforms-lite' ),
 			'field_cannot_be_reordered'               => esc_html__( 'This field cannot be moved.', 'wpforms-lite' ),
@@ -689,6 +708,7 @@ class WPForms_Builder {
 				'{from}',
 				'{to}'
 			),
+			'form_meta'                               => $this->form_data['meta'] ?? [],
 		];
 
 		$strings = $this->add_localized_currencies( $strings );

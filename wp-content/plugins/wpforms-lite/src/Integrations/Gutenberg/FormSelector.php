@@ -40,6 +40,7 @@ class FormSelector implements IntegrationInterface {
 		'buttonBackgroundColor' => CSSVars::ROOT_VARS['button-background-color'],
 		'buttonTextColor'       => CSSVars::ROOT_VARS['button-text-color'],
 		'copyPasteJsonValue'    => '',
+		'pageBreakColor'        => CSSVars::ROOT_VARS['page-break-color'],
 	];
 
 	/**
@@ -114,7 +115,6 @@ class FormSelector implements IntegrationInterface {
 		add_action( 'init', [ $this, 'register_block' ] );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
 		add_action( 'wpforms_frontend_output_container_after', [ $this, 'replace_wpforms_frontend_container_class_filter' ] );
-		add_action( 'init', [ $this, 'enable_block_translations' ] );
 		add_action( 'rest_api_init', [ $this, 'register_api_route' ] );
 	}
 
@@ -207,6 +207,9 @@ class FormSelector implements IntegrationInterface {
 			'copyPasteJsonValue'    => [
 				'type' => 'string',
 			],
+			'pageBreakColor'        => [
+				'type' => 'string',
+			],
 		];
 
 		$this->register_styles();
@@ -278,7 +281,7 @@ class FormSelector implements IntegrationInterface {
 
 		wp_enqueue_script(
 			'wpforms-gutenberg-form-selector',
-			WPFORMS_PLUGIN_URL . 'assets/js/components/admin/gutenberg/' . $script,
+			WPFORMS_PLUGIN_URL . 'assets/js/admin/gutenberg/' . $script,
 			[ 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ],
 			WPFORMS_VERSION,
 			true
@@ -290,10 +293,12 @@ class FormSelector implements IntegrationInterface {
 			$this->get_localize_data()
 		);
 
+		wp_set_script_translations( 'wpforms-gutenberg-form-selector', 'wpforms-lite' );
+
 		if ( $this->render_engine === 'modern' ) {
 			wp_enqueue_script(
 				'wpforms-modern',
-				WPFORMS_PLUGIN_URL . "assets/js/wpforms-modern{$min}.js",
+				WPFORMS_PLUGIN_URL . "assets/js/frontend/wpforms-modern{$min}.js",
 				[ 'wpforms-gutenberg-form-selector' ],
 				WPFORMS_VERSION,
 				true
@@ -373,10 +378,11 @@ class FormSelector implements IntegrationInterface {
 				esc_html__( 'form', 'wpforms-lite' ),
 				esc_html__( 'contact', 'wpforms-lite' ),
 				esc_html__( 'survey', 'wpforms-lite' ),
-				'the dude',
 			],
 			'form_select'                  => esc_html__( 'Select a Form', 'wpforms-lite' ),
 			'form_settings'                => esc_html__( 'Form Settings', 'wpforms-lite' ),
+			'form_edit'                    => esc_html__( 'Edit Form', 'wpforms-lite' ),
+			'form_entries'                 => esc_html__( 'View Entries', 'wpforms-lite' ),
 			'field_styles'                 => esc_html__( 'Field Styles', 'wpforms-lite' ),
 			'label_styles'                 => esc_html__( 'Label Styles', 'wpforms-lite' ),
 			'button_styles'                => esc_html__( 'Button Styles', 'wpforms-lite' ),
@@ -422,17 +428,18 @@ class FormSelector implements IntegrationInterface {
 			'wpforms_empty_info'           => sprintf( esc_html__( 'You can use %1$sWPForms%2$s to build contact forms, surveys, payment forms, and more with just a few clicks.', 'wpforms-lite' ), '<strong>','</strong>' ),
 			// Translators: %1$s: Opening anchor tag, %2$s: Closing achor tag.
 			'wpforms_empty_help'           => sprintf( esc_html__( 'Need some help? Check out our %1$scomprehensive guide.%2$s', 'wpforms-lite' ), '<a target="_blank" href="' . esc_url( wpforms_utm_link( 'https://wpforms.com/docs/creating-first-form/', 'gutenberg', 'Create Your First Form Documentation' ) ) . '">','</a>' ),
+			'other_styles'                 => esc_html__( 'Other Styles', 'wpforms-lite' ),
+			'page_break'                   => esc_html__( 'Page Break', 'wpforms-lite' ),
 		];
-
-		if ( version_compare( $GLOBALS['wp_version'], '5.1.1', '<=' ) ) {
-			array_pop( $strings['form_keywords'] );
-		}
 
 		$forms = wpforms()->get( 'form' )->get( '', [ 'order' => 'DESC' ] );
 		$forms = ! empty( $forms ) ? $forms : [];
 		$forms = array_map(
 			static function ( $form ) {
 				$form->post_title = htmlspecialchars_decode( $form->post_title, ENT_QUOTES );
+				$max_length       = 47;
+				$form->post_title = trim( mb_substr( trim( $form->post_title ), 0, $max_length ) );
+				$form->post_title = mb_strlen( $form->post_title ) === $max_length ? $form->post_title . '…' : $form->post_title;
 
 				return $form;
 			},
@@ -440,12 +447,17 @@ class FormSelector implements IntegrationInterface {
 		);
 
 		return [
-			'logo_url'          => WPFORMS_PLUGIN_URL . 'assets/images/sullie-alt.png',
+			'logo_url'          => WPFORMS_PLUGIN_URL . 'assets/images/wpforms-logo.svg',
 			'block_preview_url' => WPFORMS_PLUGIN_URL . 'assets/images/integrations/gutenberg/block-preview.png',
 			'block_empty_url'   => WPFORMS_PLUGIN_URL . 'assets/images/empty-states/no-forms.svg',
 			'wpnonce'           => wp_create_nonce( 'wpforms-gutenberg-form-selector' ),
+			'urls'              => [
+				'form_url'    => admin_url( 'admin.php?page=wpforms-builder&view=fields&form_id={ID}' ),
+				'entries_url' => admin_url( 'admin.php?view=list&page=wpforms-entries&form_id={ID}' ),
+			],
 			'forms'             => $forms,
 			'strings'           => $strings,
+			'isPro'             => wpforms()->is_pro(),
 			'defaults'          => self::DEFAULT_ATTRIBUTES,
 			'is_modern_markup'  => $this->render_engine === 'modern',
 			'is_full_styling'   => $this->disable_css_setting === 1,
@@ -464,12 +476,11 @@ class FormSelector implements IntegrationInterface {
 	 * Let's WP know that we have translation strings on our block script.
 	 *
 	 * @since 1.8.3
-	 *
-	 * @return void
+	 * @deprecated 1.8.5
 	 */
 	public function enable_block_translations() {
 
-		wp_set_script_translations( 'wpforms-gutenberg-form-selector', 'wpforms-lite' );
+		_deprecated_function( __METHOD__, '1.8.5' );
 	}
 
 	/**
