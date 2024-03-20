@@ -3,3 +3,5 @@ Username: adminfarazhashmi
 Password: 8mWhbX6W36wHJSLm7f
 Email: developerfaraz@outlook.com
 Table Prefix: blog_
+URL: http://hashmiserver/theblog/
+Login URL: http://hashmiserver/theblog/wp-login.php
