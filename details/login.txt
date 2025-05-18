@@ -5,3 +5,13 @@ Email: developerfaraz@outlook.com
 Table Prefix: blog_
 URL: http://hashmiserver/theblog/
 Login URL: http://hashmiserver/theblog/wp-login.php
+
+
+MySQL DB Details For Windows 11 IIS10:
+Username: root
+Password: gT$%54xR23#@Pq
+Host: All Available HOSTS
+
+Username: adminfarazhashmi
+Password: Rk82@$sK75%&xP
+Host: localhost
