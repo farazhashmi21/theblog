@@ -1,0 +1,124 @@
+`
+### wp-core ###
+
+version: 6.4.3
+site_language: en_US
+user_language: en_US
+timezone: +00:00
+permalink: undefined
+https_status: false
+multisite: false
+user_registration: 0
+blog_public: false
+default_comment_status: open
+environment_type: production
+user_count: 1
+dotorg_communication: true
+
+### wp-paths-sizes ###
+
+wordpress_path: C:\inetpub\wwwroot\sites\dummy
+wordpress_size: 55.47 MB (58165880 bytes)
+uploads_path: C:\inetpub\wwwroot\sites\dummy/wp-content/uploads
+uploads_size: 0.00 B (0 bytes)
+themes_path: C:\inetpub\wwwroot\sites\dummy/wp-content/themes
+themes_size: 1.16 MB (1221453 bytes)
+plugins_path: C:\inetpub\wwwroot\sites\dummy/wp-content/plugins
+plugins_size: 86.63 MB (90841671 bytes)
+database_size: 1.36 MB (1425408 bytes)
+total_size: 144.63 MB (151654412 bytes)
+
+### wp-active-theme ###
+
+name: Twenty Ten (twentyten)
+version: 4.0 (latest version: 4.4)
+author: the WordPress team
+author_website: https://wordpress.org/
+parent_theme: none
+theme_features: core-block-patterns, widgets-block-editor, editor-style, editor-styles, wp-block-styles, editor-color-palette, post-formats, post-thumbnails, automatic-feed-links, menus, custom-background, custom-header, widgets
+theme_path: C:\inetpub\wwwroot\sites\dummy/wp-content/themes/twentyten
+auto_update: Disabled
+
+### wp-plugins-inactive (6) ###
+
+Create Block Theme: version: 1.13.8, author: WordPress.org, Auto-updates disabled
+UpdraftPlus - Backup/Restore: version: 1.24.1, author: UpdraftPlus.Com, DavidAnderson (latest version: 1.25.5), Auto-updates disabled
+Wordfence Security: version: 7.11.4, author: Wordfence (latest version: 8.0.5), Auto-updates disabled
+WP-Optimize - Clean, Compress, Cache: version: 3.3.1, author: David Anderson, Ruhani Rabin, Team Updraft (latest version: 4.2.1), Auto-updates disabled
+WPForms Lite: version: 1.8.7.2, author: WPForms (latest version: 1.9.5.2), Auto-updates disabled
+Yoast SEO: version: 22.3, author: Team Yoast, Auto-updates disabled
+
+### wp-media ###
+
+image_editor: WP_Image_Editor_GD
+imagick_module_version: Not available
+imagemagick_version: Not available
+imagick_version: Not available
+file_uploads: 1
+post_max_size: 8M
+upload_max_filesize: 2M
+max_effective_size: 2 MB
+max_file_uploads: 20
+gd_version: bundled (2.1.0 compatible)
+gd_formats: GIF, JPEG, PNG, WebP, BMP, AVIF, XPM
+ghostscript_version: not available
+
+### wp-server ###
+
+server_architecture: Windows NT 10.0 AMD64
+httpd_software: Microsoft-IIS/10.0
+php_version: 8.4.7 64bit
+php_sapi: cgi-fcgi
+max_input_variables: 1000
+time_limit: 30
+memory_limit: 128M
+admin_memory_limit: 256M
+max_input_time: 60
+upload_max_filesize: 2M
+php_post_max_size: 8M
+curl_version: 8.12.1 OpenSSL/3.0.16
+suhosin: false
+imagick_availability: false
+pretty_permalinks: false
+current: 2025-05-18T16:23:25+00:00
+utc-time: Sunday, 18-May-25 16:23:25 UTC
+server-time: 2025-05-18T16:23:22+00:00
+
+### wp-database ###
+
+extension: mysqli
+server_version: 8.4.5
+client_version: mysqlnd 8.4.7
+max_allowed_packet: 67108864
+max_connections: 151
+
+### wp-constants ###
+
+WP_HOME: undefined
+WP_SITEURL: undefined
+WP_CONTENT_DIR: C:\inetpub\wwwroot\sites\dummy/wp-content
+WP_PLUGIN_DIR: C:\inetpub\wwwroot\sites\dummy/wp-content/plugins
+WP_MEMORY_LIMIT: 40M
+WP_MAX_MEMORY_LIMIT: 256M
+WP_DEBUG: false
+WP_DEBUG_DISPLAY: true
+WP_DEBUG_LOG: false
+SCRIPT_DEBUG: false
+WP_CACHE: false
+CONCATENATE_SCRIPTS: undefined
+COMPRESS_SCRIPTS: undefined
+COMPRESS_CSS: undefined
+WP_ENVIRONMENT_TYPE: Undefined
+WP_DEVELOPMENT_MODE: undefined
+DB_CHARSET: utf8
+DB_COLLATE: undefined
+
+### wp-filesystem ###
+
+wordpress: writable
+wp-content: writable
+uploads: writable
+plugins: writable
+themes: writable
+
+`

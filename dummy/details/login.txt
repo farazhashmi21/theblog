@@ -1,7 +1,7 @@
 Site Title: The Blog
 Username: adminfarazhashmi
 Password: 8mWhbX6W36wHJSLm7f
-Email: developerfaraz@outlook.com
-Table Prefix: blog_
-URL: http://hashmiserver/theblog/
-Login URL: http://hashmiserver/theblog/wp-login.php
+Email: developerfaraz@yahoo.com
+Table Prefix: dump_
+URL: http://127.0.0.1/dummy/
+Login URL: http://127.0.0.1/dummy/wp-login.php
